@@ -91,52 +91,6 @@ void write_pid_local()
 	return;
 }
 
-/*
-static void sig_cld(int signo)
-{
-	pid_t pid;
-	int status;
-	printf("SIGCLD received\n");
-	if(signal(SIGCLD,sig_cld)==SIG_ERR)
-	{
-		perror("signal err");
-		exit(1);
-	}
-	if((pid=wait(&status))<0)
-		perror("wait error");
-	printf("pid=%d\n",pid);
-}
-*/
-
-
-/***************************************************************************
-Function: signal_handler
-
-Description: signal register function
-
-Calls: db_base_maintenence
-
-Called By: main
-
-Table Accessed: NULL
-
-Table Updated: NULL
-
-INput: 
-	m: the signal
-
-Output: NULL
-
-Return: NULL
-
-Others: UNUSED
-***************************************************************************/
-/*
-void signal_handler(int m)
-{
-	db_base_maintenance();	
-}
-*/
 
 /***************************************************************************
 Function: tcp_connect
@@ -178,32 +132,6 @@ int tcp_connect()
 	client_address.sin_port=htons(TCP_PORT);
 	client_len=sizeof(client_address);
 	printf("DATE: %s value=%s port=%d\n",timerecord(),value,TCP_PORT);
-/*
-	int keepAlive=1;
-	int keepIdle=5;
-	int keepInterval=3;
-	int keepCount=2;
-	if(setsockopt(client_sockfd,SOL_SOCKET,SO_KEEPALIVE,(void*)&keepAlive,sizeof(keepAlive))<0)
-	{
-		DEBUG("SET KEEP ERROR:%d",errno);
-		exit(1);
-	}
-	if(setsockopt(client_sockfd,SOL_TCP,TCP_KEEPIDLE,(void*)&keepIdle,sizeof(keepIdle))<0)
-	{
-		DEBUG("SET KEEP ERROR:%d",errno);
-		exit(1);
-	}
-	if(setsockopt(client_sockfd,SOL_TCP,TCP_KEEPINTVL,(void*)&keepInterval,sizeof(keepInterval))<0)
-	{
-		DEBUG("SET KEEP ERROR:%d",errno);
-		exit(1);
-	}
-	if(setsockopt(client_sockfd,SOL_TCP,TCP_KEEPCNT,(void*)&keepCount,sizeof(keepCount))<0)
-	{
-		DEBUG("SET KEEP ERROR:%d",errno);
-		exit(1);
-	}
-*/
 	do
 	{
 		result=connect(client_sockfd,(struct sockaddr*)&client_address,client_len);
@@ -217,7 +145,6 @@ int tcp_connect()
 	{
 		DEBUG("CONNECT ERROR");
 		dbrecord_v2("PLC CONNECT ABNORMAL");
-	//	addoraltconfig(DEV_CONF,"connect","connect=1");
 		send_signal(1);
 	}
 	while(i>20)
@@ -225,19 +152,8 @@ int tcp_connect()
 		if(result==0)
 			break;
 		result=connect(client_sockfd,(struct sockaddr*)&client_address,client_len);
-	//	if(result!=-1)
-	//		break;
 		sleep(i*3);
 	}
-
-//	if(result==-1)
-//	{
-//		DEBUG("connect error");
-//		exit(1);
-//	}
-    /* set timeout for tcp receiving
-     * may not be useful
-     */
 	struct timeval tv;
 	tv.tv_sec=5;
 	tv.tv_usec=0;
@@ -279,7 +195,6 @@ int read_plcfile()
 {
 	char value[32];
 	int i;
-//	struct plc_struct *q=NULL;
 	int number;
 	int length;
 	char part1[32];
@@ -342,50 +257,11 @@ int read_plcfile()
 	dataoffset=atoi(value);
 	read_file("DEV-STAT","datalength",value);
 	datalength=atoi(value);
-//	device_state=query_state();
 	
 	return 1;
 }
 
 
-
-/***************************************************************************
-Function: msg_init
-
-Description: to initial the message queue
-
-Calls: NULL
-
-Called By: NULL
-
-Table Accessed: NULL
-
-Table Updated: NULL
-
-INput: 
-	id:message ID
-
-Output: NULL
-
-Return: msg descriptor
-
-Others: UNUSED
-***************************************************************************/
-/*
-int msg_init(int id)
-{
-	int msgid;
-	msgid=msgget((key_t)id,0666|IPC_CREAT);
-	if(msgid==-1)
-	{
-		DEBUG("LOCAL MSG ERROR");
-		exit(1);
-	}
-	printf("local:msg init ok\n");
-	return msgid;
-}
-
-*/
 
 /***************************************************************************
 Function: alarm_recv
@@ -413,18 +289,13 @@ void *alarm_recv(void *arg)
 	int i;
 	struct timeval tpstart,tpend;
 	float timeuse;
-//	int msgid;
 	int rc;
-//	struct msg_local alarm_data;
-//	unsigned char data[MSG_MAX];
 	unsigned char cmp[MSG_MAX],data[MSG_MAX];
 	int udp_socket;
 	struct sockaddr_in server;
 	struct sockaddr_in client;
 	socklen_t sin_size;
 	int num;
-//	msgid=msg_init(MSGID);
-    /* set udp connection */
 	udp_socket=socket(AF_INET,SOCK_DGRAM,0);
 	bzero(&server,sizeof(server));
 	server.sin_family=AF_INET;
@@ -432,13 +303,10 @@ void *alarm_recv(void *arg)
 	server.sin_addr.s_addr=htonl(INADDR_ANY);
 	bind(udp_socket,(struct sockaddr*)&server,sizeof(struct sockaddr));
 	sin_size=sizeof(struct sockaddr_in);
-//	alarm_data.mtype=1;
 	printf("DATE: %s local:alarm_recv pthread start!~\n",timerecord());
 	memset(cmp,0x00,sizeof(cmp));
-    /* recv data from udp connection */
 	while(1)
 	{
-//		gettimeofday(&tpstart,NULL);
 		num=recvfrom(udp_socket,data,MSG_MAX,0,(struct sockaddr *)&client,&sin_size);
 		if(num<=0)
 		{
@@ -447,49 +315,14 @@ void *alarm_recv(void *arg)
 			perror("    recv error:");
 			exit(1);
 		}
-//		sleep(2);
-	//	gettimeofday(&tpstart,NULL);
-//		for(i=0;i<num;i++)
-//			printf("%02x ",data[i]);
-//		for(i=0;i<num;i++)
-//			printf("%02x ",cmp[i]);
 		if(memcmp(cmp,data,num))
 		{
-		//	alarm_data.length=num;
-		//	if(~netflag)
-		//	{
-//again:
-		//		if((rc=msgsnd(msgid,&alarm_data,(MSG_MAX+4),0))==-1)
-		//		{
-		//			if(errno==EINTR)
-		//				goto again;
-		//			DEBUG("LOCAL MSG ERROR:%d",errno);
-	//
-	//				perror("mmsgsnd error:");
-	//				close(udp_socket);
-	//				exit(1);				}
-		//	}
-		//	gettimeofday(&tpstart,NULL);
 			pthread_mutex_lock(&mutex);
-		//	gettimeofday(&tpstart,NULL);
 			insert_alarm(data,num);
-	//		gettimeofday(&tpend,NULL);
-	//		timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-	//		timeuse/=1000000;
-	//		printf("used time:%f sec\n",timeuse);
 			pthread_mutex_unlock(&mutex);
-		//	gettimeofday(&tpend,NULL);
-		//	timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-		//	timeuse/=1000000;
-		//	printf("used time:%f sec\n",timeuse);
 			memcpy(cmp,data,num);
 		}
 		usleep(20);
-	//	gettimeofday(&tpend,NULL);
-	//	timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-	//	timeuse/=1000000;
-	//	printf("used time:%f sec\n",timeuse);
-
 	}
 	exit(1);
 }
@@ -525,13 +358,9 @@ void *second_level_recv(void *arg)
     int fast_time=500000;
     int slow_time=5;
 	fd=tcp_connect();
-//	pid_t pid;
 	struct fetch request;
 	struct timeval tpstart,tpend;
 	float timeuse;
-//	int totlen=0;
-//	int count=0;
-//	unsigned char data[100*2*1024];
 	int length=0;
 	unsigned char second_data[2*1024];
 	struct plc_struct *p;
@@ -549,37 +378,17 @@ void *second_level_recv(void *arg)
     {
         slow_time=rc;
     }
-
-//	if(signal(SIGCLD,SIG_IGN)==SIG_ERR)
-//	{
-//		perror("signal error");
-//		exit(1);
-//	}
-    /* set the request packet */ 
 	packet_set(&request);
-    /* request data from plc */
 	while(1)
 	{
-	//	gettimeofday(&tpstart,NULL);
 		if((length=tcp_receive(&request,fd,second_data))<0)
 		{
-//			goto err;
 			DEBUG("tcp_recv error");
 			perror("    tcp recv error:");
 			exit(1);
 		}
-	//	gettimeofday(&tpend,NULL);
-	//	timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-	//	timeuse/=1000000;
-	//	printf("time use：%f sec\n",timeuse);
         /* judge the facility state */
 		rc=detection(second_data);
-//		for(i=0;i<length;i++)
-//			printf("%02x ",second_data[i]);
-//		printf("%02x %02x ",second_data[200],second_data[201]);
-//		printf("%02x %02x\n",second_data[202],second_data[203]);
-//		printf("length=%d\n",length);
-//		printf("rc=%d\n",rc);
 		if(rc)
 		{
 			if(device_switch==0||device_switch==2)
@@ -589,14 +398,9 @@ void *second_level_recv(void *arg)
 				send_signal(2);
 				device_switch=1;
 			}
-	//		gettimeofday(&tpstart,NULL);
 			pthread_mutex_lock(&mutex);
 			insert_second(second_data,length);
 			pthread_mutex_unlock(&mutex);
-	//		gettimeofday(&tpend,NULL);
-	//		timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-	//		timeuse/=1000000;
-	//		printf("time use:%f secs\n",timeuse);
 	        usleep(fast_time);
 		}
 		else
@@ -613,48 +417,8 @@ void *second_level_recv(void *arg)
             pthread_mutex_unlock(&mutex);
             sleep(slow_time);
 		}
-//        usleep(timeinterval);
-//		sleep(5);
 	}
 }
-//		gettimeofday(&tpend,NULL);
-//		timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-//		timeuse/=1000000;
-//		printf("used time:%f sec \n",timeuse);
-//		if(count<50)
-//		{
-//			memcpy(data+totlen,second_data,length);
-//			totlen+=length;
-//		}
-//		else
-//		{
-//			gettimeofday(&tpstart,NULL);
-//err:
-//			pid=fork();
-//			if(pid==0)
-//			{
-//				close(fd);
-//				printf("totlen=%d\n",totlen);
-//				insert_second(data,totlen);
-//				exit(1);
-//			}
-//			else if(pid>0)
-//			{
-//				gettimeofday(&tpend,NULL);
-//				timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-//				timeuse/=1000000;
-//				printf("used time:%f sec \n",timeuse);
-//
-//				count=0;
-//				totlen=0;
-//			}
-//			else
-//			{
-//				DEBUG("fork error");
-//			}
-//		}
-//	}
-//}
 
 
 
@@ -758,9 +522,7 @@ int packet_set(struct fetch *request)
 	request->start_address_h=p->start_address_h;
 	request->start_address_l=p->start_address_l;
 	request->len_h=p->len_h;
-//	printf("request->len_h=%d\n",request->len_l);
 	request->len_l=p->len_l;
-//	printf("request->len_h=%d\n",request->len_l);
 	return 1;
 }
 
@@ -796,7 +558,6 @@ int tcp_receive(struct fetch * request,int fd,unsigned char *data)
 {
 	struct timeval tpstart,tpend;
 	float timeuse;
-//	gettimeofday(&tpstart,NULL);
 	int count;
 	int i;
 	int rc;
@@ -810,24 +571,15 @@ int tcp_receive(struct fetch * request,int fd,unsigned char *data)
 		DEBUG("write error");
 		return -1;
 	}
-//	gettimeofday(&tpend,NULL);
-//	timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-//	timeuse/=1000000;
-//	printf("used time:%f sec\n",timeuse);
-//	gettimeofday(&tpstart,NULL);
-//again:
 	rc=read(fd,temp,REQUEST);
-//	gettimeofday(&tpend,NULL);
 	if(rc==16)
 	{			
 		i=0;
 		q=(struct fetch_res*)temp;
 		if(q->error_field==0x00)
 		{
-		//	gettimeofday(&tpstart,NULL);
 			while(1)
 			{
-			//	memset(temp,'\0',sizeof(temp));
 				rc=read(fd,temp,PLC_LEN);
 				if(rc!=0)
 				{
@@ -842,7 +594,6 @@ int tcp_receive(struct fetch * request,int fd,unsigned char *data)
 				}
 				if(count==0)
 					break;
-//				usleep(10000);
 			}
 		}
 		else
@@ -850,47 +601,12 @@ int tcp_receive(struct fetch * request,int fd,unsigned char *data)
 	}
 	else
 	{
-//		if(errno==EINTR)
-//			goto again;
 		DEBUG("recv error:%d",rc);
 		perror("    read error:");
 		return -1;
 	}
-//	gettimeofday(&tpend,NULL);
-//	timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-//	timeuse/=1000000;
-//	printf("used time:%f sec\n",timeuse);
 	return i;
 }
-/*
-void * signal_wait(void * arg)
-{
-
-	int err;
-	int result;
-	int signo;
-	char value[20];
-	sigset_t sigset;
-	sigemptyset(&sigset);
-	sigaddset(&sigset,SIGUSR1);
-	while(1)
-	{
-		err=sigwait(&sigset,&signo);
-		if(err!=0)
-			exit(1);
-		if(signo==SIGUSR1)
-		{
-			read_file("setting","setting",value);
-			result=atoi(value);
-			if(result!=2)
-				netflag=0;
-			else
-				netflag=2;
-	
-		}
-	}
-}
-*/
 
 
 /***************************************************************************
@@ -949,8 +665,6 @@ Others: NULL
 ***************************************************************************/
 void main()
 {
-//	signal(SIGALRM,signal_handler);
-//	set_timer();
 	write_pid_local();
 	int err;
 	db_init();
@@ -989,9 +703,6 @@ void main()
 			DEBUG("PTHREAD_CREATE ERROR");
 			exit(1);
 		}
-//		err=pthread_create(&tid3,&attr,signal_wait,NULL);
-//		if(err!=0)
-//			exit(1);
 		pthread_attr_destroy(&attr);
 	}
 	pthread_exit((void*)1);

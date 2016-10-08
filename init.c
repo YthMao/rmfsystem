@@ -49,7 +49,6 @@ void db_initialize()
     /* check the existence of tables */
 	db_table(db);
     /* delete some records in db at regular time(every day) */ 
- //   db_base_maintenance(db);
     printf("DATE: %s database ok!......\n",timerecord());
 	return;
 }
@@ -142,42 +141,24 @@ void db_table(sqlite3 * db)
 	if(rc!=SQLITE_OK)
 	{
 		DEBUG("database: device_alarm fail!......\n%s",errmsg);
-//		char *sql_table="create table device_alarm(id integer PRIMARY KEY AUTOINCREMENT,date timestamp default (strftime('%Y.%m.%d %H:%M:%f','now','localtime')),length integer,data blob)";
-//		rc=sqlite3_exec(db,sql_table,NULL,NULL,&errmsg);
-//		if(rc!=SQLITE_OK)
-//		{
-//			DEBUG("create table fail!......\n%s",errmsg);
-			sqlite3_close(db);
-			return;
-///		}
+		sqlite3_close(db);
+		return;
 	}
     printf("DATE: %s database: table device_alarm detected......\n",timerecord());
 	rc=sqlite3_get_table(db,sql1,&result,&nrow,&ncolumn,&errmsg);
 	if(rc!=SQLITE_OK)
 	{
 		DEBUG("database: device_second_level_data fail!......\n%s",errmsg);
-//		char *sql_table1="create table device_second_level_data(id integer PRIMARY KEY AUTOINCREMENT,length integer,date timestamp default (strftime('%Y.%m.%d %H:%M:%f')),data blob)";
-//		rc=sqlite3_exec(db,sql_table1,NULL,NULL,&errmsg);
-//		if(rc!=SQLITE_OK)
-//		{
-//			DEBUG("create table fail!......\n%s",errmsg);
-		sqlite3_close(db);
+	    sqlite3_close(db);
 		return;
-//		}
 	}
     printf("DATE: %s database: table device_second_level_data detected......\n",timerecord());
 	rc=sqlite3_get_table(db,sql2,&result,&nrow,&ncolumn,&errmsg);
 	if(rc!=SQLITE_OK)
 	{
 		DEBUG("database: device_running_statement fail!......\n%s",errmsg);
-	//	char *sql_table2="create table device_running_statement(date timestamp default (strftime('%Y.%m.%d %H:%M:%f')),statement text)";
-	//	rc=sqlite3_exec(db,sql_table2,NULL,NULL,&errmsg);
-	//	if(rc!=SQLITE_OK)
-	//	{
-	//		DEBUG("create table fail!......\n%s",errmsg);
 		sqlite3_close(db);
 		return;
-	//	}
 	}
     printf("DATE: %s database: table device_running_statement detected......\n",timerecord());
 	state_table_detect(db);
@@ -237,7 +218,6 @@ void state_table_detect(sqlite3* db)
 	{
 		strcpy(state,sqlite3_column_text(stmt,2));
 		sqlite3_finalize(stmt);
-//		printf("state=%s\n",state);
 		if(strcmp(state,"DEVICE ON")==0|strcmp(state,"START")==0)
 			flg=1;
 		else
@@ -248,7 +228,6 @@ void state_table_detect(sqlite3* db)
 		sqlite3_finalize(stmt);
 		flg=0;
 	}
-//	printf("flg=%d\n",flg);
 	if(flg==1)
 	{
 		err_record(db,"ERROR CLOSE");
@@ -421,10 +400,6 @@ void profile_dev()
 			break;
 	}
     printf("DATE: %s profile: %s detect ok!......\n",timerecord(),DEV_CONF);
-//	read_file("real_time","real_time_data",value);
-//	rc=atoi(value);
-//	if(rc==1)
-//		addoraltconfig(DEV_CONF,"real_time_data","real_time_data=0");
 }
 
 
@@ -495,19 +470,6 @@ Others: NULL
 void init()
 {
 	int rc;
-//	scan();
-//	while(1)
-//	{
-	//	rc=ntp();
-	//	printf("rc=%d\n",rc);
-	//	if(rc<0)
-	//	{
-	//		sleep(1);
-	//		continue;
-	//	}
-	//	else
-	//		break;
-//	}
     /* DB check */
 	db_initialize();
     /* profile check */

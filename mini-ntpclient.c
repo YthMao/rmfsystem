@@ -135,17 +135,6 @@ static int query_server(char *srv)
 		return -1;	/* Fatal error, cannot even create a socket? */
 	}
 
-//	he = gethostbyaddr(srv,4,AF_INET);
-//	he = gethostbyname(srv);
-//	if (!he) {
-//		perror("gethostbyname");
-//		close(sd);
-
-//		return -1;	/* Failure in name resolution. */
-//	}
-
-//	memset(&sa, 0, sizeof(sa));
-//	memcpy(&sa.sin_addr, he->h_addr_list[0], sizeof(sa.sin_addr));
 	printf("address=%s\n",srv);
 	fflush(stdout);
 	sa.sin_port = htons(NTP_PORT);

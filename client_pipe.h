@@ -22,69 +22,26 @@ int conn(void);
 int order(void);
 
 int msg_init(int);
-//int update_date_1(int);
-
-//int updaet_date_2(int);
 
 int first_login(void);
 
 int login(void);
 
-//void dbrecord(char*);
-
 void * signal_wait(void*);
 
 int get_line(int,char*,int);
-
-//int change_file_single_value(char*);
-
-//int recv_fork(void);
-
-//int insert_command(int,char*,char*,char*);
-
-//int change_file(char*);
-
-//int change_config(char*,char*);
-
-//int send_fork(void);
-
-//void handler(void);
-
-//void send_data(void);
-
-//void msg_init(void);
-
-//int msg_recv(struct msg_remote*);
 
 void *remote_recv(void*);
 
 void * remote_send(void*);
 
-//int device_change(void);
-
-//int real_time_data(void);
-
 int recv_error(void);
-
-//void dbinit(void);
-
-//int send_signal(int);
-
-//int msg_send(struct msg_remote*);
 
 int send_signal_usr2(void);
 
 void write_pid_remote(void);
 
-//int data_response(void);
-
 void main(void);
-
-//int send_level1(struct msg_remote);
-
-//int send_level2(struct msg_remote);
-
-//int send_level3(struct msg_remote);
 
 void write_pid_deal(void);
 

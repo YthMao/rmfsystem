@@ -49,22 +49,8 @@ int send_signal(int state)
 	int pid;
 	char *p;
 	char line[100];
-//	printf("state=%d\n",state);
-//	if(state==1)
-//	{
-//		read_file_v2("pid","local_pid",line);
-//		pid=atoi(line);
-//	}
-//	else if(state==2)
-//	{
-//		read_file_v2("pid","deal_pid",line);
-//		pid=atoi(line);
-//	}
-//	else if(state==3)
-//	{
 	read_file_v2("pid","remote_pid",line);
 	pid=atoi(line);
-//	}
 	printf("pid=%d\n",pid);
 	if(state==1)
 	{
@@ -81,31 +67,6 @@ int send_signal(int state)
 	else 
 		return 0;
 }
-/*
-void dbrecord_v2(char* state,sqlite3*db)
-{
-	int rc;
-	char sql[256];
-	char * errmsg=0;
-	char time[100];
-	gettime(time);
-	sprintf(sql,"insert into device_running_statement values(\"%s\",\"%s\")",time,state);
-	while(1)
-	{
-		rc=sqlite3_exec(db,sql,0,0,&errmsg);
-		if(rc!=SQLITE_OK)
-		{
-			if(rc==SQLITE_BUSY)
-				continue;
-			DEBUG("REMOTE RECORD ERROR");
-			exit(1);
-		}
-		else
-			break;
-	}
-	return;
-}
-*/
 
 
 /***************************************************************************

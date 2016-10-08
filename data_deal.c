@@ -18,10 +18,6 @@
 #include <unistd.h>
 
 sqlite3 *db;
-//int dbcount1=0;
-//int dbcount2=0;
-
-//char result[8][2048];
 
 
 
@@ -203,61 +199,6 @@ int confirm(int number)
 	sqlite3_reset(stmt3);
 }
 
-/*
-int insert_second(unsigned char *data,int length)
-{
-	int rc;
-	char*errmsg=0;
-	if(dbcount2==0)
-	{
-		if(sqlite3_exec(db,"BEGIN",NULL,NULL,&errmsg)!=SQLITE_OK)
-		{
-			DEBUG("BEGIN ERROR");
-			exit(1);
-		}
-		sqlite3_free(errmsg);
-	}
-	sqlite3_stmt *stmt=NULL;
-	const char*sql="insert into device_second_level_data(id,data) values(NULL,?)";
-	if(sqlite3_prepare_v2(db,sql,strlen(sql),&stmt,0)!=SQLITE_OK)
-	{
-		if(stmt)
-			sqlite3_finalize(stmt);
-		DEBUG("PREPARE ERROR");
-		exit(1);
-	}
-	sqlite3_bind_blob(stmt,3,data,length,NULL);
-	while(1)
-	{
-		if((rc=sqlite3_step(stmt))!=SQLITE_DONE)
-		{
-			if(rc==SQLITE_BUSY)
-				continue;
-			DEBUG("INSERT ERROR");
-			exit(1);
-		}
-		else 
-			break;
-	}
-	sqlite3_finalize(stmt);
-	dbcount2++;
-	if(dbcount2>=100)
-	{
-		if(sqlite3_exec(db,"COMMIT",NULL,NULL,&errmsg)!=SQLITE_OK)
-		{
-
-			DEBUG("COMMIT ERROR");
-			exit(1);
-		}
-		sqlite3_free(errmsg);
-		dbcount2=0;
-	}
-	return 1;
-}
-
-*/
-
-
 
 /***************************************************************************
 Function: msg_recv
@@ -303,26 +244,6 @@ int msg_recv(struct msg_local*data,int msg)
 		return 1;
 }
 
-/*
-int insert_alarm(unsigned char *data,int length)
-{
-	int rc;
-	char *errmsg;
-	struct timeval tpstart,tpend;
-	float timeuse;
-	char sql[512];
-	sprintf(sql,"insert into device_alarm(length,data) values(%d,\"%s\")",length,data);
-	gettimeofday(&tpstart,NULL);
-	rc=sqlite3_exec(db,sql,0,0,&errmsg);
-	gettimeofday(&tpend,NULL);
-	timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-	timeuse/=1000000;
-	printf("used time : %f sec\n",timeuse);
-	if(rc==SQLITE_OK)
-		return 1;
-	else 0;
-}
-*/
 
 
 /***************************************************************************
@@ -354,11 +275,8 @@ int insert_alarm(unsigned char *data,int length)
 {
 	int rc;
 	char *errmsg=0;
-//	struct timeval tpstart,tpend;
-//	float timeuse;
 	sqlite3_stmt *stmt=NULL;
 	char *sql="insert into device_alarm(id,length,data) values(NULL,?,?)";
-//	gettimeofday(&tpstart,NULL);
 	if(length>0)
 	{
 		while((rc=sqlite3_prepare_v2(db,sql,strlen(sql),&stmt,0))!=SQLITE_OK)
@@ -373,10 +291,8 @@ int insert_alarm(unsigned char *data,int length)
 			DEBUG("PREPARE ERROR:%s",sqlite3_errmsg(db));
 			exit(1);
 		}
-//		gettimeofday(&tpstart,NULL);
 		sqlite3_bind_int(stmt,1,length);
 		sqlite3_bind_blob(stmt,2,data,length,NULL);
-//		gettimeofday(&tpend,NULL);
 		while(1)
 		{
 			if((rc=sqlite3_step(stmt))!=SQLITE_DONE)
@@ -389,11 +305,7 @@ int insert_alarm(unsigned char *data,int length)
 			else 
 				break;
 		}
-//		gettimeofday(&tpend,NULL);
 		sqlite3_finalize(stmt);
-//		timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
-//		timeuse/=1000000;
-//		printf("used time:%f sec\n",timeuse);
 		return 1;
 	}
 	else
@@ -433,12 +345,6 @@ int insert_second(unsigned char *data,int length)
 	char*errmsg=0;
 	if(length>0)
 	{
-//		if(sqlite3_exec(db,"BEGIN",NULL,NULL,&errmsg)!=SQLITE_OK)
-//		{
-//			DEBUG("BEGIN ERROR");
-//			exit(1);
-//		}
-//		sqlite3_free(errmsg);
 		sqlite3_stmt *stmt=NULL;
 		const char*sql="insert into device_second_level_data(id,length,data) values(NULL,?,?)";
 		while((rc=sqlite3_prepare_v2(db,sql,strlen(sql),&stmt,0))!=SQLITE_OK)
@@ -468,12 +374,6 @@ int insert_second(unsigned char *data,int length)
 				break;
 		}
 		sqlite3_finalize(stmt);
-//		if(sqlite3_exec(db,"COMMIT",NULL,NULL,&errmsg)!=SQLITE_OK)
-//		{
-//			DEBUG("COMMIT ERROR");
-//			exit(1);
-//		}
-//		sqlite3_free(errmsg);
 	}
 	else
 		return 0;
@@ -532,7 +432,6 @@ int query(struct remote_data* data)
 		return -1;
 	}
 	ncolumn=sqlite3_column_count(stmt);
-//	printf("ncolumn=%d\n",ncolumn);
 	rc=sqlite3_step(stmt);
 	if(rc==SQLITE_ROW)
 	{
@@ -603,16 +502,10 @@ int query_state()
 		return -1;
 	}
 	ncolumn=sqlite3_column_count(stmt);
-//	printf("ncolumn=%d\n",ncolumn);
 	rc=sqlite3_step(stmt);
 	if(rc==SQLITE_ROW)
 	{
-//		data->number=sqlite3_column_int(stmt,0);
-//		data->length=sqlite3_column_int(stmt,1);
 		strcpy(state,sqlite3_column_text(stmt,2));
-//		len=sqlite3_column_bytes(stmt,3);
-//		memcpy(data->data,sqlite3_column_blob(stmt,3),len);
-	//	printf("len=%d\n",len);
 		sqlite3_finalize(stmt);
 		if(strcmp(state,"DEVICE ON")==0)
 			return 1;
@@ -672,17 +565,10 @@ int query_maxid()
 		DEBUG("PREPARE ERROR");
 		return -1;
 	}
-//	ncolumn=sqlite3_column_count(stmt);
-//	printf("ncolumn=%d\n",ncolumn);
 	rc=sqlite3_step(stmt);
 	if(rc==SQLITE_ROW)
 	{
 		maxid=sqlite3_column_int(stmt,0);
-//		data->length=sqlite3_column_int(stmt,1);
-//		strcpy(state,sqlite3_column_text(stmt,2));
-//		len=sqlite3_column_bytes(stmt,3);
-//		memcpy(data->data,sqlite3_column_blob(stmt,3),len);
-	//	printf("len=%d\n",len);
 		sqlite3_finalize(stmt);
 		return maxid;
 	}
@@ -745,11 +631,9 @@ int query_alarm(struct alarm_data* data)
 		return -1;
 	}
 	ncolumn=sqlite3_column_count(stmt);
-//	printf("ncolumn=%d\n",ncolumn);
 	rc=sqlite3_step(stmt);
 	if(rc==SQLITE_ROW)
 	{
-//		data->number=sqlite3_column_int(stmt,0);
 		data->length=sqlite3_column_int(stmt,2);
 		strcpy(data->time,sqlite3_column_text(stmt,1));
 		len=sqlite3_column_bytes(stmt,3);
@@ -763,77 +647,6 @@ int query_alarm(struct alarm_data* data)
 		return 0;
 	}
 }
-/*
-int query(struct remote_data* data)
-{
-	int i=0;
-	int j=0;
-	int nrow=0,ncolumn=0;
-	char**result;
-	char *errmsg=0;
-	int rc;
-	int len=0;
-	char sql[100];
-	sprintf(sql,"select * from device_second_level_data where id=%lld",data->number);
-	while(1)
-	{
-		result=NULL;
-	//	printf("xx\n");
-		rc=sqlite3_get_table(db,sql,&result,&nrow,&ncolumn,&errmsg);
-	//	printf("xm\n");
-		if(rc!=SQLITE_OK)
-		{
-			if(rc==SQLITE_BUSY)
-			{
-				usleep(1000);
-				continue;
-			}
-			DEBUG("query error:%s",sqlite3_errmsg(db));
-			if(errmsg)
-				printf("errmsg=%s\n",errmsg);
-			sqlite3_free_table(result);
-			sqlite3_close(db);
-			return -1;
-		}
-		else
-			break;
-	}
-//	printf("nrow=%d ncolumn=%d\n",nrow,ncolumn);
-	if(nrow==1&&ncolumn==4)
-	{
-//		printf("4:%s\n5:%s\n6:%s\n7:%s\n",result[4],result[5],result[6],result[7]);
-	//	printf("xx\n");
-		data->number=atoi(result[4]);
-	//	printf("ld\n");
-		data->length=atoi(result[5]);
-	//	printf("xx\n");
-		strcpy(data->time,result[6]);
-		printf("ld\n");
-//		printf("result=%d\n",sizeof(result[7]));
-//		if(result[7]!=NULL)
-//		{
-		memcpy(data->data,result[7],data->length);
-//		}
-		printf("xx\n");
-	}
-	else if(nrow==0&&ncolumn==0)
-	{
-		printf("no data\n");
-	//	sqlite3_free_table(result);
-		return 0;
-	}
-	else
-	{
-		DEBUG("QUERY ERROR!\n");
-		return -1;
-	}
-//	memset(result,0,sizeof(result));
-	printf("xmxs\n");
-	sqlite3_free_table(result);
-	printf("dhakjwh\n");
-	return 1;
-}
-*/
 
 
 /***************************************************************************

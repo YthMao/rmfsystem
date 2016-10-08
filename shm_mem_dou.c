@@ -78,18 +78,6 @@ int sem_p(int semid)
 	return 0;
 }
 
-/*int sem_p_no(int semid)
-{
-	struct sembuf sbuf={0,-1,IPC_NOWAIT};
-	if(semop(semid,&sbuf,1)==-1)
-	{
-		if()
-		printf("a wrong operation to semaphare occured\n");
-		return -1;
-	}
-	return 0;
-}
-*/
 /*v操作 释放信号量*/
 int sem_v(int semid)
 {
@@ -109,18 +97,7 @@ int getsem(int semid)
 	else
 		return 0;
 }
-/*
-int sem_v_no(int semid)
-{
-	struct sembuf sbuf={0,1,IPC_NOWAIT};
-	if(semop(semid,&sbuf,1)==-1)
-	{
-		perror("a wrong operation to semaphore occured\n");
-		return -1;
-	}
-	return 0;
-}
-*/
+
 int sem_delete(int semid)
 {
 	return (semctl(semid,0,IPC_RMID));

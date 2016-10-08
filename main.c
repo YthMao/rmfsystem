@@ -53,7 +53,6 @@ int main()
 {	
 	int rc;
 	int status;
-//	DEBUG("TEST");
 	init();
 	dbrecord("START");
 	pid_t temp;
@@ -72,19 +71,6 @@ int main()
 				}
 		}
 		sleep(1);
-//		if(deal==-1)
-//		{
-//			temp=fork();
-//			deal=temp;
-//			if(temp<0)
-//				printf("error in com\n");
-//			else if(temp==0)
-//				if((rc=execl("/home/lhw4d4/project/git/rmfsystem_test/data_deal","data_deal",NULL))<0)
-//				{
-//					printf("main deal err:%d\n",errno);
-//				}
-//		}
-//		sleep(2);
 		if(com==-1)
 		{
 			temp=fork();
@@ -195,8 +181,6 @@ Others: NULL
 static void dbrecord(char * state)
 {
 	dbinit();
-//	char time[100];
-//	gettime(time);
 	int count=0;
 	int rc;
 	char*errmsg=0;
@@ -223,7 +207,6 @@ static void dbrecord(char * state)
 		else
 			break;
 	}
-//	sqlite3_bind_text(stmt,1,time,strlen(time),SQLITE_TRANSIENT);
 	sqlite3_bind_text(stmt,1,state,strlen(state),SQLITE_TRANSIENT);
 	count=0;
 	while(1)

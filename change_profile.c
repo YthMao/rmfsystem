@@ -64,7 +64,7 @@ int addoraltconfig(char* conf_path,char*conf_name,char*config_buff)
 	long congig_lenth=ftell(f);
 	
 	int configbuf_lenth=strlen(config_buff);
-	configbuf_lenth=configbuf_lenth+5;//why?
+	configbuf_lenth=configbuf_lenth+5;
 	char sum_buf[congig_lenth+configbuf_lenth];
 	memset(sum_buf,0,sizeof(sum_buf));
 	fseek(f,0,SEEK_SET);
@@ -107,7 +107,6 @@ int addoraltconfig(char* conf_path,char*conf_name,char*config_buff)
 		strcat(sum_buf,config_buff);
 		strcat(sum_buf,"\n");
 	}
-//	printf("---sum_buf--->%s<------\n",sum_buf);
 	remove(conf_path);
 	fclose(f);
 	FILE*fp;

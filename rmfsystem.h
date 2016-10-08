@@ -104,5 +104,4 @@ void gettime(char*);
 int send_signal(int);
 
 
-//void dbrecord_v2(char*,sqlite3*db);
 #endif

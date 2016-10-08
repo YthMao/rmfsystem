@@ -31,7 +31,6 @@ struct capacity  get_system_tf_free()
 	size_t mbfreesize=freeDisk>>20;
         temp.total_cap=mbtotalsize;
         temp.free_cap=mbfreesize;
-//	printf("/ total=%dMb, free=%dMb\n",mbtotalsize,mbfreesize);
 	return temp;
 }
 

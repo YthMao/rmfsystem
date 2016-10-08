@@ -16,45 +16,18 @@
 #include<netinet/in.h>
 #include<string.h>
 #include "plc_simulate.h"
-//#include "encrpyt.h"
 
 #define TCP_ADDR "192.168.0.1"
 #define TCP_PORT 2000
 #define UDP_LEN 100
-//#define UDP_PORT 10000
 #define PUBLIC_KEY "public.key"
 #define PUBLIC_TXT "public.txt"
 
 int tcp_connect(void);
 void udp_communication(void);
-//void tcp_encrypt();
-/*
-void tcp_encrypt()
-{
-	char np[4096];
-	char bp[4096];
-	int n;
-	FILE*fp;
-	char *content;
-	char temp[4096];
-	int sock;
-	fp=fopen(PUBLIC_KEY,"w");
-	sock=tcp_connect();
-	n=read(sock,temp,4096);
-	printf("%d\n",n);
-	strcpy(np,"-----BEGIN PUBLIC KEY-----\n");
-	strcat(np,temp);
-	strcat(np,"\n-----END PUBLIC KEY-----");
-	printf("%s\n",np);
-	fputs(np,fp);
-	fclose(fp);
-	content=encrypt("are you sb?",PUBLIC_KEY);
-	write(sock,content,4096);
-	close(sock);
-	return;
-	
-}
-*/
+
+
+
 int tcp_connect()
 {
 	int client_sockfd;
@@ -105,7 +78,6 @@ void tcp_communication()
 	request.len_l=0x64;
 	while(1)
 	{
-//		gettimeofday(&tpstart,NULL);
 		rc=write(sockfd,&request,sizeof(struct fetch));
 		if(rc<16)
 		{
@@ -126,22 +98,12 @@ void tcp_communication()
 			printf("tcp recv error\n");
 			exit(1);
 		}
-	//	gettimeofday(&tpend,NULL);
 		timeuse=1000000*(tpend.tv_sec-tpstart.tv_sec)+tpend.tv_usec-tpstart.tv_usec;
 		timeuse/=1000000;
 		printf("used time:%f sec\n",timeuse);
 	}
-//	else
-//	{
-//		for(i=0;i<rc;i++)
-//		{
-//			printf("%02x\t",buff[i]);
-//			if(i%5==0)
-//				printf("\n");
-//		}
-//		printf("\nrecv over\n");
-//	}
-}
+
+
 
 void udp_communication()
 {
@@ -207,8 +169,6 @@ void tcp_test()
 
 void main()
 {
-//	udp_communication();
-//	tcp_encrypt();
 	tcp_communication();
 	return;
 }

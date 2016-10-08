@@ -89,7 +89,6 @@ Others:
 void * udp_send(void *arg)
 {
 	int i;
-//	unsigned char d[2];
 	unsigned char  udp_buff[UDP_BUFF];
 	memset(udp_buff,0,UDP_BUFF);
 	int udp_socket;
@@ -105,13 +104,8 @@ void * udp_send(void *arg)
 		perror("create socket error:");
 		exit(1);
 	}
- //   srand((unsigned)time(NULL));
 	while(1)
 	{
-	//	for(i=0;i<2;i++)
-	//	{
-	//		d[i]=(unsigned char)rand()%256;
-	//	}
 		if(udptest)
 		{
 			memset(udp_buff,0x80,1);
@@ -124,7 +118,6 @@ void * udp_send(void *arg)
 			perror("send udp data error:");
 			break;
 		}
-	//	printf("send a udp\n");
 		sleep(UDP_INTERVAL);
 	}
 	close(client_socket_fd);
@@ -208,9 +201,7 @@ void *tcp_send(void*arg)
 			}
 			else
 			{
-		//		printf("%02x %02x %02x\n",fetch_struct.systemid_1,fetch_struct.systemid_2,fetch_struct.len_of_head);
 				response_data(fetch_struct,tcp_socket);
-		//		printf("send a tcp\n");
 			}
 		}
 	}
@@ -243,44 +234,28 @@ void response_data(struct fetch fetch_data,int fd)
 {
 	int rc;
 	int m;
-//	printf("1\n");
 	int i=0;
-//	float real[15];
-//	while(i<15)
-//	{
-//		real[i]=(float)(i+1)*(1+sin(ANGLE(plc_float[i])*PI/180));
-//		i++;
-//	}
 	struct fetch_res res_struct,*p;
 	p=&res_struct;
 	init_struct(p);
-//	m=combine(fetch_data.len_h,fetch_data.len_l);
 	unsigned char data[2048],*q;
 	q=data;
 	memset(data,0x30,2048);
-//	printf("m=%d i=%2x\n",m,fetch_data.dbnr);
-//	memcpy(data,real,m);
-//	printf("tcptest1=%d\n",tcptest);
 	if(tcptest==1)
 	{
 		memset(q+1328,0xff,4);
-//		printf("mm\n");
 	}
 	if(tcptest==0)
 	{
 		memset(q+1328,0x00,4);
 	}
-//	printf("haha\n");
 	write(fd,p,16);
-//	printf("haha\n");
 	
 	rc=write(fd,data,1670);
-//	printf("rc=%d\n",rc);
 	if(rc<=0)
 	{
 		perror("write error");
 	}
-//	printf("send ok second\n%02x\n",data[0]);
 	return;
 }
 
@@ -448,7 +423,6 @@ int tcp_establish()
 		perror("accept error:");
 		exit(1);
 	}
-//	printf("fd=%d\ni",tcp_socket);
 	return tcp_socket;
 }
 
@@ -486,10 +460,8 @@ void main()
 	if(err!=0)
 		exit(1);
 	err=pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
-//	printf("1\n");
 	if(err==0)
 	{
-//		printf("1\n");
 		err=pthread_create(&tid1,&attr,udp_send,NULL);
 		if(err!=0)
 			exit(1);
