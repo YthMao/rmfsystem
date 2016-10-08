@@ -1,5 +1,0 @@
-.gitignore
-*.[oa]
-main
-client_pipe
-comtest_pipe
