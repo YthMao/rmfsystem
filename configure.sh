@@ -14,8 +14,7 @@ if [ $result != "1"  ]
 then
     echo "please reexecute the shell script......"
     exit 0
-fi
-# 
+fi 
 echo -e "n\np\n1\n\n\nw\n" | fdisk $disk &>/dev/null
 echo "create HDD successfully......"
 echo "1.2 format HDD............"
@@ -25,13 +24,13 @@ then
     echo "foramt HDD successfully......"
 fi
 echo "1.3 mount HDD............"
-echo "  establish the direction......"
+echo "  establish the database dictionary: /data"
 mkdir /data
 if [ $? -eq 0  ]
 then
-    echo "establish the direction successfully......"
+    echo "establish the dictionary successfully......"
 fi
-echo " execute the mount"
+echo " execute the mount operation"
 mount="$disk1 /data ext3 defaults 0 0"
 echo $mount >> /etc/fstab
 tail -n 1 /etc/fstab
@@ -51,7 +50,8 @@ echo ":1 yes 2 no"
 read -p "#>" result
 if [ $result != "1"  ]
 then 
-    echo "TZ='Asia/Shanghai';export TZ" >>/home/harry/.profile
+    echo "TZ='Asia/Shanghai';export TZ" >>/home/linaro/.profile
+    source /home/linaro/.profile
 fi
 echo "setting the timezone successfully......"
 echo "2.2 set the time.........."
@@ -72,6 +72,7 @@ echo "3.4 install python support........."
 apt-get install python-dev
 echo "4. compile the programme......"
 echo "4.1 makefile........."
+rm *.o
 makefile
 echo "4.2 makeclean........."
 make clean
@@ -119,9 +120,13 @@ case "$plctype" in
         configure/device.config
         sed -i "s/^\(start_address_l=\).*/\1${start_address_l}/g" \
         configure/device.config
-        echo "please the TCP collection rate (second)"
+        echo "please input the normal TCP collection rate (us)"
         read -p "#>" collection_rate
-        sed -i "s/^\(timeintervala=\).*/\1${collection_rate}/g" \
+        sed -i "s/^\(fast_time=\).*/\1${collection_rate}/g" \
+        configure/device.config
+        echo "please input the slow TCP collection rate (s)"
+        read -p "#>" collection_rate
+        sed -i "s/^\(slow_time=\).*/\1${collection_rate}/g" \
         configure/device.config
         echo -e "please confirm whether enable the power_off value\n \
         1.yes 2.no"
@@ -191,6 +196,6 @@ then
     exit 0
 fi
 
-echo "successfully........."
+echo "configure successfully........."
 
 #echo "success"
