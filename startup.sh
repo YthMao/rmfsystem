@@ -5,4 +5,4 @@
 cur=$(dirname $0)
 main="${cur}/main"
 log="${cur}/log"
-$main>>$log
+$main>>$log &

@@ -28,20 +28,19 @@ char *getprogrammepath(char *);
 #define REMOTE_PORT 13000
 #define MSG_MAX 256
 #define MSGID 2000
-#define DB "local.db"
-/*
+#define DB "/data/local.db"
+
 #define DEV_CONF "/home/linaro/project/configure/device.config"
 #define PRO_CONF "/home/linaro/project/configure/process.config"
 #define CONFIG "/home/linaro/project/configure/config"
+/*
 #define FIFO_NAME "/tmp/my_fifo"
 #define COM_PATH "/home/linaro/project/rmfsystem_4_6/comtest_pipe"
 #define RMT_PATH "/home/linaro/project/rmfsystem_4_6/client_pipe"
-*/
-
 #define DEV_CONF getconfigpath("device.config")
 #define PRO_CONF getconfigpath("process.config")
 #define CONFIG   getconfigpath("config")
-
+*/
 #define COM_PATH getprogrammepath("comtest_pipe")
 #define RMT_PATH getprogrammepath("client_pipe")
 
