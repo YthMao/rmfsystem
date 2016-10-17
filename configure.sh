@@ -54,13 +54,21 @@ then
     source /home/linaro/.profile
 fi
 echo "setting the timezone successfully......"
-echo "2.2 set the time.........."
-echo "    first set the date:the format like 2016-05-31"
-read -p "#>" datetime
-date -s $datetime
-echo "   then set the time:the format like 14:15:00"
-read -p "#>" daytime
-date -s $daytime
+echo "The current time is : (date -R)"
+echo "Do you want to change the time?"
+echo ":1 yes 2 no"
+read -p "#>" result
+if [ $result != "2"]
+then
+    echo "    set the time.........."
+    echo "    first set the date:the format like 2016-05-31"
+    read -p "#>" datetime
+    date -s $datetime
+    echo "   then set the time:the format like 14:15:00"
+    read -p "#>" daytime
+    date -s $daytime
+    echo "the current time is: (date -R)"
+fi
 echo "3.install library support........."
 echo "3.1 update the system.........."
 apt-get update
@@ -73,7 +81,7 @@ apt-get install python-dev
 echo "4. compile the programme......"
 echo "4.1 makefile........."
 rm *.o
-makefile
+make
 echo "4.2 makeclean........."
 make clean
 echo "5.change the profile........."
@@ -133,18 +141,23 @@ case "$plctype" in
         read -p "#>" result
         if [ ${result} == "1" ]
         then
-            sed -i "s/^\(running=\).*/\11\g"
+            sed -i "s/^\(running=\).*/\11\g" \
+            configure/device.config
             echo "please input the length of the power-off value (bit)"
             read -p "#>" poweroff_len
-            sed -i "s/^\(datalength=\).*/\1${poweroff_len}\g"
+            sed -i "s/^\(datalength=\).*/\1${poweroff_len}\g" \
+            configure/device.config
             echo "please input the location of the power-off value "
             read -p "#>" poweroff_location
-            sed -i "s/^\(datalocation=\).*/\1${poweroff_location}\g" 
+            sed -i "s/^\(datalocation=\).*/\1${poweroff_location}\g"  \
+            configure/device.config
             echo "please input the offset of the power-off value "
             read -p "#>" poweroff_offset
-            sed -i "s/^\(dataoffset=\).*/\1${poweroff_offset}\g"
+            sed -i "s/^\(dataoffset=\).*/\1${poweroff_offset}\g" \
+            configure/device.config
        else
-           sed -i "s/^\(running=\).*/\10\g"
+           sed -i "s/^\(running=\).*/\10\g" \
+           configure/device.config
        fi
     ;;
     2) echo "you select ABB"
@@ -178,7 +191,7 @@ echo "7. autostart setting........."
 echo "7.1 add executive right to the startup script........."
 chmod +x startup.sh
 echo "7.2 add autostart to the start-up file......... "
-sed -i "/exit 0/i\$(pwd)/startup.sh>>$(pwd)/log"
+sed -i "/exit 0/i\$(pwd)/startup.sh>>$(pwd)/log"  /etc/rc.local
 
 echo "8.establish the database......"
 echo "8.1 copy the sql script to /data direction......"
