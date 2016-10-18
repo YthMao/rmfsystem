@@ -54,7 +54,7 @@ then
     source /home/linaro/.profile
 fi
 echo "setting the timezone successfully......"
-echo "The current time is : (date -R)"
+echo "The current time is :",$(date -R)
 echo "Do you want to change the time?"
 echo ":1 yes 2 no"
 read -p "#>" result
@@ -80,7 +80,7 @@ echo "3.4 install python support........."
 apt-get install python-dev
 echo "4. compile the programme......"
 echo "4.1 makefile........."
-rm *.o
+make clean
 make
 echo "4.2 makeclean........."
 make clean
@@ -141,22 +141,22 @@ case "$plctype" in
         read -p "#>" result
         if [ ${result} == "1" ]
         then
-            sed -i "s/^\(running=\).*/\11\g" \
+            sed -i "s/^\(running=\).*/\11/g" \
             configure/device.config
             echo "please input the length of the power-off value (bit)"
             read -p "#>" poweroff_len
-            sed -i "s/^\(datalength=\).*/\1${poweroff_len}\g" \
+            sed -i "s/^\(datalength=\).*/\1${poweroff_len}/g" \
             configure/device.config
             echo "please input the location of the power-off value "
             read -p "#>" poweroff_location
-            sed -i "s/^\(datalocation=\).*/\1${poweroff_location}\g"  \
+            sed -i "s/^\(datalocation=\).*/\1${poweroff_location}/g"  \
             configure/device.config
             echo "please input the offset of the power-off value "
             read -p "#>" poweroff_offset
-            sed -i "s/^\(dataoffset=\).*/\1${poweroff_offset}\g" \
+            sed -i "s/^\(dataoffset=\).*/\1${poweroff_offset}/g" \
             configure/device.config
        else
-           sed -i "s/^\(running=\).*/\10\g" \
+           sed -i "s/^\(running=\).*/\10/g" \
            configure/device.config
        fi
     ;;
