@@ -5,7 +5,7 @@
 
 echo "1.set HDD............"
 echo "1.1 create HDD......."
-echo  "  please input the HDD device:"
+echo  "please input the HDD device:"
 read -p "#>" disk
 echo "Are you sure the device: " $disk
 echo ":1 yes 2 no"
@@ -24,14 +24,14 @@ then
     echo "foramt HDD successfully......"
 fi
 echo "1.3 mount HDD............"
-echo "  establish the database dictionary: /data"
+echo "establish the database dictionary: /data"
 mkdir /data
 if [ $? -eq 0  ]
 then
     echo "establish the dictionary successfully......"
 fi
-echo " execute the mount operation"
-mount="$disk1 /data ext3 defaults 0 0"
+echo "execute the mount operation"
+mount="${disk} /data ext3 defaults 0 0"
 echo $mount >> /etc/fstab
 tail -n 1 /etc/fstab
 echo "Are you sure the content?"
@@ -45,10 +45,10 @@ fi
 echo "2.set time............"
 echo "the local time is : ",$(date -R)
 echo "2.1 set the time zone........."
-echo "    the default time zone is GMT+8"
+echo "the default time zone is GMT+8"
 echo ":1 yes 2 no"
 read -p "#>" result
-if [ $result != "1"  ]
+if [ $result != "2"  ]
 then 
     echo "TZ='Asia/Shanghai';export TZ" >>/home/linaro/.profile
     source /home/linaro/.profile
@@ -58,13 +58,13 @@ echo "The current time is :",$(date -R)
 echo "Do you want to change the time?"
 echo ":1 yes 2 no"
 read -p "#>" result
-if [ $result != "2"]
+if [ $result != "2" ]
 then
-    echo "    set the time.........."
-    echo "    first set the date:the format like 2016-05-31"
+    echo "set the time.........."
+    echo "first set the date:the format like 2016-05-31"
     read -p "#>" datetime
     date -s $datetime
-    echo "   then set the time:the format like 14:15:00"
+    echo "then set the time:the format like 14:15:00"
     read -p "#>" daytime
     date -s $daytime
     echo "the current time is: (date -R)"
@@ -85,7 +85,7 @@ make
 echo "4.2 makeclean........."
 make clean
 echo "5.change the profile........."
-echo "    first select the plc type......"
+echo "first select the plc type......"
 echo -e "1:s7-300\n2:ABB\n3:schneider\n4:etc..."
 read -p "#>" plctype
 case "$plctype" in
@@ -124,9 +124,9 @@ case "$plctype" in
         read -p "#>" data_length
         data_length_h=${data_length:0:2}
         data_length_l=${data_length:2:4}
-        sed -i "s/^\(start_address_h=\).*/\1${start_address_h}/g" \
+        sed -i "s/^\(len_h=\).*/\1${data_length_h}/g" \
         configure/device.config
-        sed -i "s/^\(start_address_l=\).*/\1${start_address_l}/g" \
+        sed -i "s/^\(len_l=\).*/\1${data_length_l}/g" \
         configure/device.config
         echo "please input the normal TCP collection rate (us)"
         read -p "#>" collection_rate
@@ -136,8 +136,8 @@ case "$plctype" in
         read -p "#>" collection_rate
         sed -i "s/^\(slow_time=\).*/\1${collection_rate}/g" \
         configure/device.config
-        echo -e "please confirm whether enable the power_off value\n \
-        1.yes 2.no"
+        echo -e "please confirm whether enable the power_off value"
+        echo ":1.yes 2.no"
         read -p "#>" result
         if [ ${result} == "1" ]
         then
@@ -179,19 +179,25 @@ sed -i "s/^\(servaddress=\).*/\1${server_address}/g" configure/device.config
 echo "6.3 router ipaddress setting......"
 read -p "#>" router_address
 sed -i "s/^\(router_address=\).*/\1${router_address}/g" configure/device.config
-echo "    router router username setting......"
+echo "router router username setting......"
 read -p "#>" username
 sed -i "s/^\(username=\).*/\1${username}/g" configure/device.config
-echo "    router router password setting......"
+echo "router router password setting......"
 read -p "#>" password
 sed -i "s/^\(password=\).*/\1${password}/g" configure/device.config
 echo "successfully........."
+echo "6.5 RMFD ipaddress setting......"
+read -p "#>" rmf_adress
+echo "netmask......"
+read -p "#>" netmask
+echo "auto eth0\niface eth0 inet static\naddress ${rmf_address}\nnetmask ${netmask}\ngateway ${router_address}\n"
 
 echo "7. autostart setting........."
 echo "7.1 add executive right to the startup script........."
 chmod +x startup.sh
 echo "7.2 add autostart to the start-up file......... "
-sed -i "/exit 0/i\$(pwd)/startup.sh>>$(pwd)/log"  /etc/rc.local
+line=$(sed -n '/exit 0/=' /etc/rc.local |sed -n "2"p)
+sed -i "${line}i\\$(pwd)/startup.sh"  /etc/rc.local
 
 echo "8.establish the database......"
 echo "8.1 copy the sql script to /data direction......"
