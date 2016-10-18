@@ -187,10 +187,10 @@ read -p "#>" password
 sed -i "s/^\(password=\).*/\1${password}/g" configure/device.config
 echo "successfully........."
 echo "6.5 RMFD ipaddress setting......"
-read -p "#>" rmf_adress
-echo "netmask......"
+read -p "#>" rmf_address
+echo "set netmask......"
 read -p "#>" netmask
-echo "auto eth0\niface eth0 inet static\naddress ${rmf_address}\nnetmask ${netmask}\ngateway ${router_address}\n"
+echo -e "auto eth0\niface eth0 inet static\naddress ${rmf_address}\nnetmask ${netmask}\ngateway ${router_address}\n" >> /etc/network/interfaces
 
 echo "7. autostart setting........."
 echo "7.1 add executive right to the startup script........."
@@ -199,15 +199,24 @@ echo "7.2 add autostart to the start-up file......... "
 line=$(sed -n '/exit 0/=' /etc/rc.local |sed -n "2"p)
 sed -i "${line}i\\$(pwd)/startup.sh"  /etc/rc.local
 
-echo "8.establish the database......"
-echo "8.1 copy the sql script to /data direction......"
+echo "8.set device information......"
+echo "please input the username"
+read -p "#>" dev_username
+sed -i "s/^\(username=\).*/\1${dev_username}/g" configure/config
+echo "please input the serialnumber"
+read -p "#>" dev_serialnumber
+sed -i "s/^\(serialnumber=\).*/\1${dev_serialnumber}/g" configure/config
+echo "setting dev info ok!......"
+
+echo "9.establish the database......"
+echo "9.1 copy the sql script to /data direction......"
 cp schema.sql /data
 if [ $? -ne 0  ]
 then 
     echo  "    copy the file to /data direction fail"
     exit 0
 fi
-echo "8.2 initialize the database......"
+echo "9.2 initialize the database......"
 echo  -e ".read schema.sql" | sqlite3 /data/local.db &>/dev/null
 if [ $? -ne 0  ]
 then
