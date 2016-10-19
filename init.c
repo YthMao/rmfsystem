@@ -346,18 +346,18 @@ Others: NULL
 ***************************************************************************/
 void profile_config()
 {
-	int rc;
+    int rc;
+    while(1)
+    {
 	rc=access(CONFIG,0);
-	while(1)
+	if(rc!=0)
 	{
-		if(rc!=0)
-		{
-			DEBUG("profile: %s not exist!......\n",CONFIG);
-			sleep(1);
-		}
-		else
-			break;
+	    DEBUG("profile: %s not exist!......\n",CONFIG);
+	    sleep(1);
 	}
+	else
+	    break;
+    }
     printf("DATE: %s profile: %s detect ok!......\n",timerecord(),CONFIG);
 }
 
@@ -387,17 +387,16 @@ Others: NULL
 void profile_dev()
 {
 	int rc;
-	char value[5];
-	rc=access(DEV_CONF,0);
-	while(1)
-	{
-		if(rc!=0)
-		{
-			DEBUG("profile: %s not exist!......\n",DEV_CONF);
-			sleep(1);
-		}
-		else 
-			break;
+        while(1)
+        {
+	    rc=access(DEV_CONF,0);
+	    if(rc!=0)
+	    {
+		DEBUG("profile: %s not exist!......\n",DEV_CONF);
+		sleep(1);
+	    }
+	    else 
+		break;
 	}
     printf("DATE: %s profile: %s detect ok!......\n",timerecord(),DEV_CONF);
 }
@@ -427,19 +426,18 @@ Others: NULL
 ***************************************************************************/
 void profile_process()
 {
-	int rc;
-	char value[5];
-	rc=access(PRO_CONF,0);
-	while(1)
+    int rc;
+    while(1)
+    {
+        rc=access(PRO_CONF,0);
+	if(rc!=0)
 	{
-		if(rc!=0)
-		{
-			DEBUG("profile: %s not exist!......\n",PRO_CONF);
-			sleep(1);
-		}
-		else
-			break;
+	    DEBUG("profile: %s not exist!......\n",PRO_CONF);
+	    sleep(1);
 	}
+	else
+	    break;
+    }
     printf("DATE: %s profile: %s detect ok!......\n",timerecord(),PRO_CONF);
 
 }

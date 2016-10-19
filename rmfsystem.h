@@ -30,9 +30,9 @@ char *getprogrammepath(char *);
 #define MSGID 2000
 #define DB "/data/local.db"
 
-#define DEV_CONF "/home/linaro/project/configure/device.config"
-#define PRO_CONF "/home/linaro/project/configure/process.config"
-#define CONFIG "/home/linaro/project/configure/config"
+#define DEV_CONF "/home/linaro/project/rmfsystem/configure/device.config"
+#define PRO_CONF "/home/linaro/project/rmfsystem/configure/process.config"
+#define CONFIG "/home/linaro/project/rmfsystem/configure/config"
 /*
 #define FIFO_NAME "/tmp/my_fifo"
 #define COM_PATH "/home/linaro/project/rmfsystem_4_6/comtest_pipe"
