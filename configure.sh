@@ -67,7 +67,7 @@ then
     echo "then set the time:the format like 14:15:00"
     read -p "#>" daytime
     date -s $daytime
-    echo "the current time is: (date -R)"
+    echo "the current time is:",$(date -R)
 fi
 echo "3.install library support........."
 echo "3.1 update the system.........."
