@@ -185,7 +185,6 @@ sed -i "s/^\(username=\).*/\1${username}/g" configure/device.config
 echo "router router password setting......"
 read -p "#>" password
 sed -i "s/^\(password=\).*/\1${password}/g" configure/device.config
-echo "successfully........."
 echo "6.5 RMFD ipaddress setting......"
 read -p "#>" rmf_address
 echo "set netmask......"
@@ -198,6 +197,8 @@ chmod +x startup.sh
 echo "7.2 add autostart to the start-up file......... "
 line=$(sed -n '/exit 0/=' /etc/rc.local |sed -n "2"p)
 sed -i "${line}i\\$(pwd)/startup.sh"  /etc/rc.local
+echo "7.3 set timing reboot......"
+echo -e "0 0 * * * /sbin/reboot"  >> /etc/crontab
 
 echo "8.set device information......"
 echo "please input the username"
@@ -213,14 +214,14 @@ echo "9.1 copy the sql script to /data direction......"
 cp schema.sql /data
 if [ $? -ne 0  ]
 then 
-    echo  "    copy the file to /data direction fail"
+    echo  "copy the file to /data direction fail"
     exit 0
 fi
 echo "9.2 initialize the database......"
 echo  -e ".read schema.sql" | sqlite3 /data/local.db &>/dev/null
 if [ $? -ne 0  ]
 then
-    echo "    cannot initialize the database"
+    echo "cannot initialize the database"
     exit 0
 fi
 
