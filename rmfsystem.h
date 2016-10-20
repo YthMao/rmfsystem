@@ -33,18 +33,20 @@ char *getprogrammepath(char *);
 #define DEV_CONF "/home/linaro/project/rmfsystem/configure/device.config"
 #define PRO_CONF "/home/linaro/project/rmfsystem/configure/process.config"
 #define CONFIG "/home/linaro/project/rmfsystem/configure/config"
-/*
+
 #define FIFO_NAME "/tmp/my_fifo"
-#define COM_PATH "/home/linaro/project/rmfsystem_4_6/comtest_pipe"
-#define RMT_PATH "/home/linaro/project/rmfsystem_4_6/client_pipe"
+#define COM_PATH "/home/linaro/project/rmfsystem/comtest_pipe"
+#define RMT_PATH "/home/linaro/project/rmfsystem/client_pipe"
+/*
 #define DEV_CONF getconfigpath("device.config")
 #define PRO_CONF getconfigpath("process.config")
 #define CONFIG   getconfigpath("config")
-*/
+
 #define COM_PATH getprogrammepath("comtest_pipe")
 #define RMT_PATH getprogrammepath("client_pipe")
 
 #define FIFO_NAME "/tmp/my_fifo"
+*/
 #define __DEBUG__
 #ifdef __DEBUG__
 #define DEBUG(format,...) printf("DATE: %s    FILE: "__FILE__", LINE: %04d: "format"\n",timerecord(),__LINE__,##__VA_ARGS__)

@@ -31,8 +31,9 @@ then
     echo "establish the dictionary successfully......"
 fi
 echo "execute the mount operation"
-mount="${disk} /data ext3 defaults 0 0"
-echo $mount >> /etc/fstab
+mount /dev/sda /data
+mou="${disk} /data ext3 defaults 0 0"
+echo $mou >> /etc/fstab
 tail -n 1 /etc/fstab
 echo "Are you sure the content?"
 echo ":1 yes 2 no"
