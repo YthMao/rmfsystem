@@ -705,6 +705,7 @@ int login()
 	}
 	snprintf(write_buf,4096,"RCON 002\r\n");
     read_file_v1("login","username",value);
+    strcpy(username,value);
     snprintf(temp,4086,"username=%s\r\n\r\n",value);
     strcat(write_buf,temp);
 	printf("write_buf=%s",write_buf);
