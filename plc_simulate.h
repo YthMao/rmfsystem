@@ -13,7 +13,7 @@
 #define _PLC_SIMULATE_H_
 
 #define LOCAL_ADDRESS "127.0.0.1"
-#define UDP_PORT 2003
+#define UDP_PORT 2002
 #define TCP_PORT 2000
 #define UDP_INTERVAL 2
 #define UDP_BUFF 256

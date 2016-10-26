@@ -129,7 +129,7 @@ case "$plctype" in
         configure/device.config
         sed -i "s/^\(len_l=\).*/\1${data_length_l}/g" \
         configure/device.config
-        echo "please input the normal TCP collection rate (us)"
+        echo "please input the normal TCP collection rate (s)"
         read -p "#>" collection_rate
         sed -i "s/^\(fast_time=\).*/\1${collection_rate}/g" \
         configure/device.config
@@ -194,7 +194,7 @@ echo -e "auto eth0\niface eth0 inet static\naddress ${rmf_address}\nnetmask ${ne
 
 echo "7. autostart setting........."
 echo "7.1 add executive right to the startup script........."
-chmod +x startup.sh
+chmod i+x startup.sh
 echo "7.2 add autostart to the start-up file......... "
 line=$(sed -n '/exit 0/=' /etc/rc.local |sed -n "2"p)
 sed -i "${line}i\\$(pwd)/startup.sh"  /etc/rc.local

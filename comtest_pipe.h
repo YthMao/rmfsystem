@@ -17,9 +17,8 @@
 #include "plc_simulate.h"
 
 #define INC(x) (((++x)>65536)?1:x)
-#define PLC_ADDR "192.168.0.1"
 #define TCP_PORT 2000
-#define UDP_PORT 2003
+#define UDP_PORT 2002
 #define PLC_LEN (2*1024)
 #define REQUEST 16
 #define REAL_TIME_NUM 20

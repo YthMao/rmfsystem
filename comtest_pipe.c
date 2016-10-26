@@ -355,7 +355,7 @@ void *second_level_recv(void *arg)
 	int i;
 	int fd;
     char timeget[16];
-    int fast_time=500000;
+    int fast_time=2;
     int slow_time=5;
 	fd=tcp_connect();
 	struct fetch request;
@@ -401,7 +401,7 @@ void *second_level_recv(void *arg)
 			pthread_mutex_lock(&mutex);
 			insert_second(second_data,length);
 			pthread_mutex_unlock(&mutex);
-	        usleep(fast_time);
+	        sleep(fast_time);
 		}
 		else
 		{
