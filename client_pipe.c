@@ -89,8 +89,9 @@ Output: Null
 
 Return: NULL
 
-Others: NULL
+Others: NO USE
 ***************************************************************************/
+/*
 void  udp_test(int m)
 {
     char test[1024];
@@ -115,6 +116,7 @@ void  udp_test(int m)
     sendto(sockfd,test,strlen(test),0,(struct sockaddr*)&server,sin_size);
     close(sockfd);
 }
+*/
 
 /***************************************************************************
 Function: signal_wait
@@ -173,9 +175,9 @@ void *signal_wait(void *arg)
 			pthread_mutex_lock(&mut);
 			device_state=atoi(value);
 			if(device_state==2)
-				printf("device off\n");
+                printf("remote: device off\n");
 			else if(device_state==1)
-				printf("device on\n");
+                printf("remote: device on\n");
 			else
 				device_state=0;
 			pthread_mutex_unlock(&mut);
@@ -216,6 +218,86 @@ void write_pid_remote()
 	sprintf(line,"remote_pid=%d",pid);
 	addoraltconfig(PRO_CONF,"remote_pid",line);
 	return;
+}
+
+
+
+/***************************************************************************
+Function: test_udp
+
+Description: the function for debug 
+
+Calls:
+
+Called By: 
+
+Table Accessed: NULL
+
+Table Updated: NULL
+
+Input: NULL
+
+Output: NULL
+
+Return: NULL
+
+Others: NULL
+***************************************************************************/
+void * test_udp(void *arg)
+{
+    int port,sock,ret,flag=1;
+    char domain[50],port_str[6],enable[5];
+    char write_buff[1024];
+    struct hostent *he;
+    struct sockaddr_in address;
+    while(1)
+    {
+        read_file("TEST","enable",enable);
+        flag = atoi(enable);
+        if(flag == 0)
+            sleep(5);
+        else
+            break;
+    }
+
+    read_file("TEST","domain",domain);
+    if(inet_addr(domain) == INADDR_NONE)
+    {
+        he = gethostbyname(domain);
+        if(!he)
+        {
+            DEBUG("gethostbyname error");
+            exit(1);
+        }
+        strcpy(domain, he->h_addr_list[0]);
+    }
+    read_file("TEST","port",port_str);
+    port = atoi(port_str);
+    if(port <= 0 && port > 65535)
+    {
+        DEBUG("port get error");
+        exit(1);
+    }
+    while(1)
+    {
+        bzero(&address,sizeof(address));
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = inet_addr(domain);
+        address.sin_port = htons(port);
+
+        sock = socket(AF_INET,SOCK_DGRAM,0);
+    
+        sprintf(write_buff,"time:%s; device-name:%s; ID:%lld; Alarm-ID:%lld",timerecord(),username,data.number,alarm_data.number);
+        ret = sendto(sock,write_buff,sizeof(write_buff),0,(struct sockaddr *)&address,sizeof(address));
+        if(ret < 0)
+        {
+            DEBUG("send error");
+            exit(1);
+        }
+        close(sock);
+        sleep(60);
+    }
+    
 }
 
 
@@ -500,8 +582,8 @@ void main()
 {
 	pthread_mutex_init(&mut,NULL);
 	int err;
-    signal(SIGALRM,udp_test);
-    set_timer();
+    //signal(SIGALRM,udp_test);
+    //set_timer();
     /* initialize the db connection  */
 	db_init();
     /* set the signal shield */
@@ -539,6 +621,9 @@ void main()
 		err=pthread_create(&tid2,&attr,remote_send,NULL);
 		if(err!=0)
 			exit(1);
+        err=pthread_create(&tid3,&attr,test_udp,NULL);
+        if(err!=0)
+            exit(1);
 		pthread_attr_destroy(&attr);
 	}
 	pthread_exit((void*)0);
@@ -607,7 +692,7 @@ Others: USING
 ***************************************************************************/
 int login()
 {
-        struct capacity cap;
+    struct capacity cap;
 	int datalocation=0;
 	int dataoffset=0;
 	int datalength=0;
@@ -630,7 +715,7 @@ int login()
 	char write_buf[4096],read_buf[4096],file_buf[4096],temp[4096];
 	if((fd = socket(AF_INET, SOCK_STREAM, 0))<0)
 	{
-		perror("socket error:");
+        perror("remote: socket error:");
 		exit(1);
 	}
 	address.sin_family = AF_INET;
@@ -661,7 +746,7 @@ int login()
 		}
 		while(i<=20)
 		{
-			printf("    try: %d times\n",i);
+            printf("remote: try: %d times\n",i);
 			result = connect(fd, (struct sockaddr *)&address, len);
 			if(result!=-1)
 				break;

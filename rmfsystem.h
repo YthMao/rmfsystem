@@ -19,9 +19,12 @@
 #include <string.h>
 #include "sqlite3.h"
 
+/*
 char *timerecord(void);
 char *getconfigpath(char *);
 char *getprogrammepath(char *);
+*/
+
 #define NORMAL_TABLE "device_second_level_data"
 #define ALARM_TABLE "device_alarm"
 #define STATE_TABLE "device_running_statement"

@@ -15,7 +15,8 @@
 
 #include "rmfsystem.h"
 
-#define HOST_ADDRESS "192.168.0.92"
+
+void *udp_test(void *);
 
 int conn(void);
 
