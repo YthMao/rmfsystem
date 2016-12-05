@@ -307,6 +307,7 @@ void * test_tcp(void *arg)
         strcat(write_buff,"\r\n\r\n");
         strcat(write_buff,body);
         ret = write(sock,write_buff,strlen(write_buff));
+        //printf("%s\n",write_buff);
         if(ret < 0)
         {
             DEBUG("send test information error");
@@ -630,6 +631,9 @@ void main()
     /* set the thread detech */
 	err=pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
     printf("DATE: %s remote:local begin\n",timerecord());
+    err=pthread_create(&tid4,&attr,test_tcp,NULL);
+    if(err!=0)
+        exit(1);
 	err=pthread_create(&tid3,&attr,signal_wait,NULL);
 	if(err!=0)
 		exit(1);
@@ -643,9 +647,6 @@ void main()
 		err=pthread_create(&tid2,&attr,remote_send,NULL);
 		if(err!=0)
 			exit(1);
-        err=pthread_create(&tid3,&attr,test_tcp,NULL);
-        if(err!=0)
-            exit(1);
 		pthread_attr_destroy(&attr);
 	}
 	pthread_exit((void*)0);
@@ -735,6 +736,8 @@ int login()
 	timeo.tv_usec=0;
 	struct hostent *he;
 	char write_buf[4096],read_buf[4096],file_buf[4096],temp[4096];
+    read_file_v1("login","username",value);
+    strcpy(username,value);
 	if((fd = socket(AF_INET, SOCK_STREAM, 0))<0)
 	{
         perror("remote: socket error:");
@@ -811,11 +814,9 @@ int login()
 		exit(1);
 	}
 	snprintf(write_buf,4096,"RCON 002\r\n");
-    read_file_v1("login","username",value);
-    strcpy(username,value);
-    snprintf(temp,4086,"username=%s\r\n\r\n",value);
+    snprintf(temp,4086,"username=%s\r\n\r\n",username);
     strcat(write_buf,temp);
-	printf("write_buf=%s",write_buf);
+	//printf("write_buf=%s",write_buf);
 	rc=write(fd,write_buf,strlen(write_buf));
 	if(rc<=0)
 	{
@@ -832,7 +833,6 @@ int login()
 	}
 	while(get_line(fd,read_buf,4096)>1)
     {
-        printf("%s",read_buf);
         if(strncmp(read_buf,"salt",4)==0)
         {
             p=strchr(read_buf,'=');
@@ -856,9 +856,10 @@ int login()
         sprintf((enpyt+2*i),"%02x",enpyt_temp[i]);
     }
     cap=get_system_tf_free();
-    snprintf(temp,4096,"username=%s\r\nsn=%s\r\nfree_sp=%d\r\ntotal_sp=%d\r\n\r\n",value,enpyt,cap.free_cap,cap.total_cap);
+    snprintf(temp,4096,"username=%s\r\nsn=%s\r\nfree_sp=%d\r\ntotal_sp=%d\r\n\r\n",username,enpyt,cap.free_cap,cap.total_cap);
     strcat(write_buf,temp);
 	rc=write(fd,write_buf,strlen(write_buf));
+    //printf("%s\n",write_buf);
 	if(rc<=0)
 	{
 		close(fd);
@@ -871,6 +872,7 @@ int login()
 	if(strncmp(read_buf,"2000 002",8)!=0)
 	{
 		close(fd);
+        printf("%s\n",read_buf);
 		DEBUG("LOCAL LOGI ERROR");
 		exit(1);
 	}
