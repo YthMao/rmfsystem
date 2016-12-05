@@ -223,7 +223,7 @@ void write_pid_remote()
 
 
 /***************************************************************************
-Function: test_tcp
+Function: test_udp
 
 Description: the function for debug 
 
@@ -246,8 +246,9 @@ Others: NULL
 void * test_tcp(void *arg)
 {
     int port,sock,ret,flag=1,len;
-    char domain[50],port_str[6],enable[5],body[128],str[8];
-    char write_buff[4096],read_buff[4096];
+    char domain[64],port_str[6],enable[5],body[128];
+    char write_buff[4096],*str;
+    char read_buff[4096];
     struct hostent *he;
     struct sockaddr_in address;
     while(1)
@@ -269,7 +270,7 @@ void * test_tcp(void *arg)
             DEBUG("gethostbyname error");
             exit(1);
         }
-        strcpy(domain, inet_ntoa(*(struct in_addr*)he->h_addr_list[0]));
+        strcpy(domain, he->h_addr_list[0]);
     }
     read_file("TEST","port",port_str);
     port = atoi(port_str);
@@ -286,36 +287,36 @@ void * test_tcp(void *arg)
         address.sin_port = htons(port);
 
         sock = socket(AF_INET,SOCK_STREAM,0);
+
         if(connect(sock,(struct sockaddr *)&address,sizeof(address))<0)
         {
-            DEBUG("connect test server error");
+            DEBUG("connect error");
             sleep(60);
             continue;
         }
-        memset(body,0,128);
-        sprintf(body,"eName=%s&id1=%lld&id2=%lld&date=%s",username,data.number,alarm_data.number,timerecord());
+        memset(body,0,4096);
+        sprintf(body,"ename=%s&id1=%lld&id2=%lld",username,data.number,alarm_data.number);
         len = strlen(body);
+        str = (char *)malloc(128);
         sprintf(str,"%d",len);
         memset(write_buff,0,4096);
-        strcat(write_buff,"POST /devicestates/webservice1.asmx/getState HTTP/1.1\r\n");
+        strcat(write_buff,"POST / HTTP/1.1\r\n");
         strcat(write_buff,"Host: ");
         strcat(write_buff,domain);
         strcat(write_buff,"\r\n");
         strcat(write_buff,"Content-Type: application/x-www-form-urlencoded\r\n");
         strcat(write_buff,"Content-Length: ");
         strcat(write_buff,str);
+        free(str);
         strcat(write_buff,"\r\n\r\n");
         strcat(write_buff,body);
         ret = write(sock,write_buff,strlen(write_buff));
         if(ret < 0)
         {
-            DEBUG("send test information error");
+            DEBUG("send error");
+            exit(1);
         }
         ret = read(sock,read_buff,4095);
-        if(ret == 0)
-        {
-            DEBUG("cannot get server information");
-        }
         close(sock);
         sleep(60);
     }
@@ -643,7 +644,7 @@ void main()
 		err=pthread_create(&tid2,&attr,remote_send,NULL);
 		if(err!=0)
 			exit(1);
-        err=pthread_create(&tid3,&attr,test_tcp,NULL);
+        err=pthread_create(&tid3,&attr,test_udp,NULL);
         if(err!=0)
             exit(1);
 		pthread_attr_destroy(&attr);

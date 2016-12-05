@@ -19,8 +19,9 @@
 #include <string.h>
 #include "sqlite3.h"
 
-/*
+
 char *timerecord(void);
+/*
 char *getconfigpath(char *);
 char *getprogrammepath(char *);
 */
