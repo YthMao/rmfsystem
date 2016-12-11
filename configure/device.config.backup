@@ -1,0 +1,64 @@
+[signal]
+#the meaning of the SIGUSR2 signal
+#0:means init state
+#1:means device on
+#2:means device off
+setting=0
+connect=0
+[collect_rate]
+#second_level_data rate (second)
+second_rate=1
+[real_time]
+#use real_time or not
+#0:don't use
+#1:use
+real_time_data=0
+[collect_area]
+#0x01 means DB area
+#0x02 means M  area
+#0x03 means I  area
+#ox04 means Q  area
+org_id=01
+[number_area]
+#the number of collection area in PLC'DB area
+#the default number is two
+number=1
+[1]
+#according to above number 
+#list these area
+#area	 between 1-255
+#start_adddress	 between 0-2048
+#len	 between 1-2048
+area=64
+start_address_h=00
+start_address_l=00
+len_h=03
+len_l=43
+[2]
+#the same
+area=02
+start_address_h=00
+start_address_l=00
+len_h=04
+len_l=00
+
+[DEV-STAT]
+running=1
+datalength=32
+datalocation=200
+dataoffset=0
+
+[PLC_INFO]
+plcaddress=192.168.0.1
+
+[NTP]
+ntpaddress=202.112.26.37
+
+[SERV_ADDR]
+servaddress=101.231.108.196
+
+[ROUTER]
+vpn_state=0
+router_address=192.168.0.3
+username=admin
+password=admin
