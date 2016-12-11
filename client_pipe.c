@@ -47,6 +47,7 @@ int plc_connect_err=0;
  * device_state=1 if the ficility is running
  * device_state=0 if the ficility is down
  */
+int order_flag=0;
 volatile int  device_state=0;
 struct alarm_data alarm_data;
 struct remote_data data;
@@ -447,6 +448,7 @@ int	order(void)
 			rc=atoi(p);
             /* set the new ID */
             pthread_mutex_lock(&mut);
+            order_flag = 0;
 			data.number=rc;
             pthread_mutex_unlock(&mut);
 		}
@@ -1161,7 +1163,6 @@ void *remote_send(void *arg)
 			sprintf(sendbuf,"DATA 002\r\nusername=%s\r\ndate=%s\r\nlength=%d\r\nnumber=%lld\r\n\r\n",username,data.time,data.length,data.number);
 			memcpy(rawbuf,sendbuf,strlen(sendbuf));
 			memcpy(rawbuf+strlen(sendbuf),data.data,data.length);
-            pthread_mutex_lock(&mut);
 			rc=write(socketfd,rawbuf,strlen(sendbuf)+data.length);
 			if(rc<=0)
 			{
@@ -1181,8 +1182,11 @@ void *remote_send(void *arg)
             }
             else
             */
-            
-			data.number++;
+            pthread_mutex_lock(&mut);
+            if(!order_flag)
+                data.number++;
+            else
+                order_flag=0;
             pthread_mutex_unlock(&mut);
 		}
         /* get the alarm data from db */
